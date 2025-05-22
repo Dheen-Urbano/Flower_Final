@@ -6,15 +6,15 @@ import urllib.request
 import os
 
 # Download model if it doesn't exist
-MODEL_URL = "https://your-direct-link-to-model/model.h5"  # Replace with actual direct link
-MODEL_PATH = "model.h5"
+MODEL_URL = "https://github.com/Dheen-Urbano/Flower_Final/blob/main/flower_model.h5" 
+MODEL_PATH = "flower_model.h5"
 
 @st.cache_resource
 def load_my_model():
     if not os.path.exists(MODEL_PATH):
         urllib.request.urlretrieve(MODEL_URL, MODEL_PATH)
     model = load_model(MODEL_PATH)
-    class_names = ['Class 0', 'Class 1', 'Class 2', 'Class 3', 'Class 4']  # Replace with actual classes
+    class_names = ['Class 0', 'Class 1', 'Class 2', 'Class 3', 'Class 4']  
     return model, class_names
 
 model, class_names = load_my_model()
