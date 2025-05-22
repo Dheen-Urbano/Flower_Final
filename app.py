@@ -4,14 +4,20 @@ import cv2
 from tensorflow.keras.models import load_model
 
 st.title("Image Classifier (Deep Learning)")
-model = load_model("model.h5")
-class_names = np.load("class_names.npy")
+
+@st.cache_resource
+def load_my_model():
+    model = load_model("model.h5")
+    class_names = np.load("class_names.npy", allow_pickle=True)
+    return model, class_names
+
+model, class_names = load_my_model()
 
 uploaded_file = st.file_uploader("Upload Image", type=["jpg", "png", "jpeg"])
 
 if uploaded_file:
     file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
-    img = cv2.imdecode(file_bytes, 1)
+    img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
     img_resized = cv2.resize(img, (64, 64))
     st.image(img, channels="BGR", caption="Uploaded Image")
 
