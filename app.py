@@ -1,47 +1,39 @@
-import os
-import urllib.request
 import streamlit as st
 import numpy as np
 import cv2
 from tensorflow.keras.models import load_model
 
-MODEL_URL = "https://your-direct-download-link/model.h5"  # <-- replace this with your direct link
-MODEL_PATH = "model.h5"
-CLASS_NAMES_PATH = "class_names.npy"
-
-@st.cache_data(show_spinner=False)
-def download_file(url, filename):
-    if not os.path.exists(filename):
-        st.write(f"Downloading {filename}...")
-        urllib.request.urlretrieve(url, filename)
-    return filename
-
-@st.cache_resource(show_spinner=False)
+# Load model and class names
+@st.cache_resource
 def load_my_model():
-    model = load_model(MODEL_PATH)
-    class_names = np.load(CLASS_NAMES_PATH)
+    model = load_model("flower_model.h5")
+    class_names = np.load("class_names.npy", allow_pickle=True)
     return model, class_names
-
-# Download model and class names if not present
-download_file(MODEL_URL, MODEL_PATH)
-download_file("https://your-direct-download-link/class_names.npy", CLASS_NAMES_PATH)  # update this too
 
 model, class_names = load_my_model()
 
-st.title("Image Classifier (Deep Learning)")
+# Streamlit UI
+st.title("Eye Disease Classification App")
+st.write("Upload an image of an eye to classify the disease.")
 
-uploaded_file = st.file_uploader("Upload Image", type=["jpg", "png", "jpeg"])
+uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
-if uploaded_file:
+if uploaded_file is not None:
+    # Convert uploaded image to OpenCV format
     file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
-    img = cv2.imdecode(file_bytes, 1)
-    img_resized = cv2.resize(img, (64, 64))
-    st.image(img, channels="BGR", caption="Uploaded Image")
+    image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+    
+    # Resize image to match model input
+    resized_image = cv2.resize(image, (224, 224))  # Change if your model uses another size
+    rgb_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2RGB)
+    
+    # Normalize and expand dimensions
+    input_image = np.expand_dims(rgb_image / 255.0, axis=0)
+    
+    # Prediction
+    prediction = model.predict(input_image)
+    predicted_class = class_names[np.argmax(prediction)]
 
-    img_input = img_resized.astype("float32") / 255.0
-    img_input = np.expand_dims(img_input, axis=0)
-
-    preds = model.predict(img_input)
-    pred_class = class_names[np.argmax(preds)]
-
-    st.subheader(f"Prediction: {pred_class}")
+    # Display image and result
+    st.image(rgb_image, caption='Uploaded Image', use_column_width=True)
+    st.success(f"Predicted Disease: **{predicted_class}**")
