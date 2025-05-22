@@ -13,8 +13,8 @@ def load_my_model():
 model, class_names = load_my_model()
 
 # Streamlit UI
-st.title("Eye Disease Classification App")
-st.write("Upload an image of an eye to classify the disease.")
+st.title("Flower Classification App")
+st.write("Upload an image of an flower to classify .")
 
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
