@@ -14,7 +14,7 @@ def load_my_model():
     if not os.path.exists(MODEL_PATH):
         urllib.request.urlretrieve(MODEL_URL, MODEL_PATH)
     model = load_model(MODEL_PATH)
-    class_names = ['Class 0', 'Class 1', 'Class 2', 'Class 3', 'Class 4']  
+    class_names = ['Tulip', 'Sunflower', 'Rose', 'Dandelion', 'Daisy']  
     return model, class_names
 
 model, class_names = load_my_model()
