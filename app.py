@@ -19,8 +19,8 @@ def load_my_model():
 
 model, class_names = load_my_model()
 
-st.title("Eye Disease Classification")
-st.write("Upload an eye image to classify.")
+st.title("Flower Classification")
+st.write("Upload an FLower image to classify.")
 
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
