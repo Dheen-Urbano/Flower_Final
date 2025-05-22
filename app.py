@@ -7,7 +7,7 @@ import os
 
 
 MODEL_URL = "https://github.com/Dheen-Urbano/Flower_Final/blob/main/flower_model.h5" 
-MODEL_PATH = "flower_model(1).h5"
+MODEL_PATH = "flower_model.h5"
 
 @st.cache_resource
 def load_my_model():
