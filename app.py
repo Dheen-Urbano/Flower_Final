@@ -1,28 +1,24 @@
 import streamlit as st
-import tensorflow as tf
 import numpy as np
 import cv2
+from tensorflow.keras.models import load_model
 
-# Load model and class names
-model = tf.keras.models.load_model("flower_model.h5")
+st.title("Image Classifier (Deep Learning)")
+model = load_model("model.h5")
 class_names = np.load("class_names.npy")
 
-st.title("Flower Classifier")
+uploaded_file = st.file_uploader("Upload Image", type=["jpg", "png", "jpeg"])
 
-uploaded_file = st.file_uploader("Upload a flower image", type=["jpg", "jpeg", "png"])
-if uploaded_file is not None:
-    # Read image as array
+if uploaded_file:
     file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
-    img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
-
-    # Preprocess
+    img = cv2.imdecode(file_bytes, 1)
     img_resized = cv2.resize(img, (64, 64))
-    img_array = img_resized.astype("float32") / 255.0
-    img_array = np.expand_dims(img_array, axis=0)
+    st.image(img, channels="BGR", caption="Uploaded Image")
 
-    # Predict
-    prediction = model.predict(img_array)
-    predicted_class = class_names[np.argmax(prediction)]
+    img_input = img_resized.astype("float32") / 255.0
+    img_input = np.expand_dims(img_input, axis=0)
 
-    st.image(img, caption="Uploaded Image", use_column_width=True)
-    st.write(f"Predicted Flower Class: **{predicted_class}**")
+    preds = model.predict(img_input)
+    pred_class = class_names[np.argmax(preds)]
+
+    st.subheader(f"Prediction: {pred_class}")
